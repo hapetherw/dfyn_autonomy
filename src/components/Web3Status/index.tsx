@@ -58,7 +58,7 @@ const Web3StatusError = styled(Web3StatusGeneric)`
   }
 `
 
-const Web3StatusConnect = styled(Web3StatusGeneric)<{ faded?: boolean }>`
+const Web3StatusConnect = styled(Web3StatusGeneric) <{ faded?: boolean }>`
   background-color: ${({ theme }) => theme.primary4};
   border: none;
   color: ${({ theme }) => theme.primaryText1};
@@ -85,7 +85,7 @@ const Web3StatusConnect = styled(Web3StatusGeneric)<{ faded?: boolean }>`
     `}
 `
 
-const Web3StatusConnected = styled(Web3StatusGeneric)<{ pending?: boolean }>`
+const Web3StatusConnected = styled(Web3StatusGeneric) <{ pending?: boolean }>`
   background-color: ${({ pending, theme }) => (pending ? theme.primary1 : theme.bg2)};
   border: 1px solid ${({ pending, theme }) => (pending ? theme.primary1 : theme.bg3)};
   color: ${({ pending, theme }) => (pending ? theme.white : theme.text1)};
@@ -164,6 +164,7 @@ function StatusIcon({ connector }: { connector: AbstractConnector }) {
 function Web3StatusInner() {
   const { t } = useTranslation()
   const { account, connector, error } = useWeb3React()
+  const { ethereum } = window;
 
   const { ENSName } = useENSName(account ?? undefined)
 
@@ -179,6 +180,42 @@ function Web3StatusInner() {
   const hasPendingTransactions = !!pending.length
   const hasSocks = useHasSocks()
   const toggleWalletModal = useWalletModalToggle()
+
+  const addMaticToMetamask = () => {
+    if (ethereum) {
+      // @ts-ignore
+      ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          "chainId": "0x89",
+          "chainName": "Matic Network",
+          "rpcUrls": ["https://rpc-mainnet.maticvigil.com/"],
+          "iconUrls": [
+            "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0/logo.png"
+          ],
+          "blockExplorerUrls": [
+            "https://explorer-mainnet.maticvigil.com/"
+          ],
+          "nativeCurrency": {
+            "name": "Matic Token",
+            "symbol": "MATIC",
+            "decimals": 18
+          }
+        }], // you must have access to the specified account
+      })
+        .then((result: any) => {
+        })
+        .catch((error: any) => {
+          if (error.code === 4001) {
+            // EIP-1193 userRejectedRequest error
+            console.log('We can encrypt anything without the key.');
+          } else {
+            console.error(error);
+          }
+        });
+    }
+
+  }
 
   if (account) {
     return (
@@ -198,15 +235,26 @@ function Web3StatusInner() {
     )
   } else if (error) {
     return (
-      <Web3StatusError onClick={toggleWalletModal}>
-        <NetworkIcon />
-        <Text>{error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}</Text>
-      </Web3StatusError>
+      <div>
+
+        {
+          error instanceof UnsupportedChainIdError && !(ethereum && ethereum.isMetaMask) &&
+          <Web3StatusError onClick={toggleWalletModal}>
+            <NetworkIcon />
+            <Text>Wrong Network</Text>
+          </Web3StatusError>
+        }
+        {
+          error instanceof UnsupportedChainIdError && (ethereum && ethereum.isMetaMask) && <Web3StatusConnect id="connect-wallet" onClick={addMaticToMetamask} faded={!account}>
+            <Text>{t('Switch to Matic')}</Text>
+          </Web3StatusConnect>
+        }
+      </div>
     )
   } else {
     return (
-      <Web3StatusConnect id="connect-wallet" onClick={toggleWalletModal} faded={!account}>
-        <Text>{t('Connect to a wallet')}</Text>
+      <Web3StatusConnect id="connect-wallet" onClick={(ethereum && ethereum.isMetaMask) ? addMaticToMetamask : toggleWalletModal} faded={!account}>
+        <Text>{(ethereum && ethereum.isMetaMask) ? t('Switch to Matic') : t('Connect to a wallet')}</Text>
       </Web3StatusConnect>
     )
   }
