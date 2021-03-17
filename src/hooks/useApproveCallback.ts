@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@uniswap/sdk'
 import { useCallback, useMemo } from 'react'
-import { ROUTER_ADDRESS, biconomyAPIKey, META_TXN_SUPPORTED_TOKENS } from '../constants'
+import { ROUTER_ADDRESS, biconomyAPIKey, META_TXN_SUPPORTED_TOKENS, META_TXN_DISABLED } from '../constants'
 import { useTokenAllowance } from '../data/Allowances'
 import { getTradeVersion, useV1TradeExchangeAddress } from '../data/V1'
 import { Field } from '../state/swap/actions'
@@ -93,7 +93,7 @@ export function useApproveCallback(
       console.error('no spender')
       return
     }
-    if (META_TXN_SUPPORTED_TOKENS[token.address.toLowerCase()]) {
+    if (META_TXN_SUPPORTED_TOKENS[token.address.toLowerCase()] && !META_TXN_DISABLED) {
       //start
       const metaToken = META_TXN_SUPPORTED_TOKENS[token.address.toLowerCase()]
       const bicomony_contract = new getWeb3.eth.Contract(metaToken.abi, token.address);

@@ -4,7 +4,7 @@ import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@uniswa
 import { useMemo } from 'react'
 import { splitSignature } from '@ethersproject/bytes'
 import { abi } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
-import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE, ROUTER_ADDRESS, biconomyAPIKey } from '../constants'
+import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE, ROUTER_ADDRESS, biconomyAPIKey, META_TXN_DISABLED } from '../constants'
 import { getTradeVersion, useV1TradeExchangeAddress } from '../data/V1'
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, getRouterContract, isAddress, shortenAddress } from '../utils'
@@ -223,7 +223,7 @@ export function useSwapCallback(
 
         // swapExactETHForTokens
 
-        if (methodName === "swapExactETHForTokens" || methodName === "swapETHForExactTokens") {
+        if (methodName === "swapExactETHForTokens" || methodName === "swapETHForExactTokens" || META_TXN_DISABLED ) {
           return contract[methodName](...args, {
             gasLimit: calculateGasMargin(gasEstimate),
             ...(value && !isZero(value) ? { value, from: account } : { from: account })

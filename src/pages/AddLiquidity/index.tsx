@@ -18,7 +18,7 @@ import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFlat } from '../../components/Row'
 
-import { ROUTER_ADDRESS, biconomyAPIKey } from '../../constants'
+import { ROUTER_ADDRESS, biconomyAPIKey, META_TXN_DISABLED } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -192,7 +192,7 @@ export default function AddLiquidity({
       ]
       value = null
     }
-    if(methodName === "addLiquidityETH"){
+    if(methodName === "addLiquidityETH" || META_TXN_DISABLED){
         setAttemptingTxn(true)
         await estimate(...args, value ? { value } : {})
           .then(estimatedGasLimit =>
