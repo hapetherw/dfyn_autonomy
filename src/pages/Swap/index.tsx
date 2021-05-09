@@ -190,7 +190,7 @@ export default function Swap() {
     recipient
   )
 
-  console.log('🍣', swapCallback, trade, allowedSlippage, deadline, recipient)
+  // console.log('🍣', swapCallback, trade, allowedSlippage, deadline, recipient)
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
@@ -261,7 +261,7 @@ export default function Swap() {
 
   const handleInputSelect = useCallback(
     inputCurrency => {
-      
+
       setApprovalSubmitted(false) // reset 2 step UI for approvals
       onCurrencySelection(Field.INPUT, inputCurrency)
     },

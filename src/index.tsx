@@ -32,6 +32,7 @@ if (typeof GOOGLE_ANALYTICS_ID === 'string') {
 } else {
   ReactGA.initialize('test', { testMode: true, debug: true })
 }
+// ReactGA.pageview(window.location.pathname + window.location.search);
 
 window.addEventListener('error', error => {
   ReactGA.exception({
