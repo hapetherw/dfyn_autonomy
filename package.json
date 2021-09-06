@@ -1,6 +1,6 @@
 {
   "name": "@uniswap/interface",
-  "description": "DFYN Interface",
+  "description": "DFYN-Autonomy Interface",
   "homepage": ".",
   "private": true,
   "devDependencies": {
